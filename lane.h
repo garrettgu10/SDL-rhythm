@@ -7,7 +7,7 @@
 #include <deque>
 
 class Lane : public Drawable {
-    static const int SPEED = 400; //pixels per second
+    static const int SPEED = 100; //pixels per second
     static const int BOTTOM_PADDING = 100; //target's offset from bottom of screen
 public:
     int x = 0;
