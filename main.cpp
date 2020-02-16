@@ -182,6 +182,7 @@ void create_loop(const char *path) {
 	std::vector<std::vector<Note *>> lanes(4, std::vector<Note *>());
 
 	bool crazy = false;
+	double prevNoteTime = 0;
 
 	//While application is running
 	while( !quit )
@@ -216,8 +217,12 @@ void create_loop(const char *path) {
 					printf("%lf\n", music->getSeconds());
 				}
 				if(crazy){
-					lanes[rand() % 4].push_back(new Note(music->getSeconds()));
-					printf("%lf\n", music->getSeconds());
+					double now = music->getSeconds();
+					if(now > prevNoteTime) {
+						lanes[rand() % 4].push_back(new Note(now));
+						printf("%lf\n", now);
+					}
+					prevNoteTime = now;
 				}
 			}else if(e.type == SDL_KEYUP) {
 				if(e.key.keysym.sym == SDLK_SPACE){

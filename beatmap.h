@@ -36,7 +36,7 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
     
     fp = fopen(path, "r");
     fseek(fp, 0, SEEK_END);
-    long totalNotes = ftell(fp);
+    long totalNotes = ftell(fp) / sizeof(BeatMapNote);
     rewind(fp);
 
     BeatMapNote *allNotes = new BeatMapNote[totalNotes];
