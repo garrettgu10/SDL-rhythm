@@ -54,7 +54,10 @@ void Lane::updateViewable() {
         nextViewable->y = calculateNoteY(nextViewable->note->time, now);
         
         if(nextViewable->y > SCREEN_HEIGHT) {
-            //don't add me back
+            //we missed it
+            score->previousHit = BAD;
+            score->counts[BAD]++;
+            score->pointVal -= 100;
         }else{
             //add me back
             viewableNotes.push_back(nextViewable);
