@@ -179,7 +179,6 @@ void create_loop(const char *path) {
 			else if( e.type == SDL_KEYDOWN )
 			{
 				int laneNo = -1;
-				//Select surfaces based on key press
 				switch( e.key.keysym.sym )
 				{
 					case SDLK_w:
@@ -244,12 +243,15 @@ void game_loop() {
 			else if( e.type == SDL_KEYDOWN )
 			{
 				int laneNo = -1;
-				//Select surfaces based on key press
 				switch( e.key.keysym.sym )
 				{
+					case SDLK_w:
 					case SDLK_UP: laneNo = 2; break;
+					case SDLK_s:
 					case SDLK_DOWN: laneNo = 1; break;
+					case SDLK_a:
 					case SDLK_LEFT: laneNo = 0; break;
+					case SDLK_d:
 					case SDLK_RIGHT: laneNo = 3; break;
 					default: break;
 				}
@@ -269,6 +271,8 @@ void game_loop() {
 
 		//Update screen
 		SDL_RenderPresent( gRenderer );
+
+		SDL_Delay(10);
 	}
 }
 

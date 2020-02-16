@@ -2,13 +2,13 @@
 
 void mix_handler(void *udata, Uint8 *, int len) {
     Music *music = (Music *)udata;
-
-    music->samples += len;
-
+    
     double timerTime = music->timer.getTime();
     double musicTime = (double)music->samples / music->frequency;
     
     music->timer.sync((timerTime + musicTime) / 2);
+
+    music->samples += len;
 }
 
 Music::Music(const char *path)  {
