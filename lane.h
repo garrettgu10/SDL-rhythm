@@ -8,14 +8,16 @@
 #include <deque>
 
 class Lane : public Drawable {
-    static const int SPEED = 350; //pixels per second
-    static const int BOTTOM_PADDING = 100; //target's offset from bottom of screen
+    static const int SPEED = 1000; //pixels per second
+    static constexpr double EXPLOSION_SPEED = 4; // 1/second
+    static const int BOTTOM_PADDING = 50; //target's offset from bottom of screen
 public:
     int x = 0;
     Music *toTrack = NULL;
     ArrowImage arrowImage = {NULL, 0};
     std::deque<Note *> futureNotes; //sorted
     std::deque<NoteImage *> viewableNotes; //sorted
+    std::deque<NoteImage *> explodingNotes;
 
     Lane(SDL_Renderer *r, Music *music, ArrowImage arrowImage, int x) : 
         Drawable(r), toTrack(music), arrowImage(arrowImage), x(x) { };

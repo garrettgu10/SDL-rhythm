@@ -19,6 +19,8 @@ public:
     Note *note;
     int x;
     int y;
+    double explosionFactor = 0;
+    double explosionStart = 0;
     NoteImage(SDL_Renderer *r, int x, int y, int rgb, Note *note, ArrowImage arrowImage) : 
         Drawable(r), x(x), y(y), note(note), arrowImage(arrowImage) {
         

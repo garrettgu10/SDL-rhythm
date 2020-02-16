@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string>
 #include <ctime>
+#include <cstdlib>
 #include "note.h"
 #include "note_image.h"
 #include "scene.h"
@@ -83,7 +84,7 @@ bool init()
 				mainScene = new Scene(gRenderer);
 
 				//create music
-				music = new Music("SmashMouth-AllStar.ogg");
+				music = new Music("clutterfunk.ogg");
 
 				//test lane
 				for(int i = 0; i < 4; i++){
@@ -134,6 +135,7 @@ bool loadImages()
 		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB( surface->format, 0, 0, 0));
 		for(int i = 0; i < 4; i++){
 			arrows[i].image = SDL_CreateTextureFromSurface(gRenderer, surface);
+			SDL_SetTextureBlendMode(arrows[i].image, SDL_BLENDMODE_BLEND);
 		}
 		arrows[0].rotation = 270;
 		arrows[1].rotation = 180;
@@ -149,7 +151,7 @@ bool loadImages()
 }
 
 //loop for creating a beatmap
-void create_loop() {
+void create_loop(const char *path) {
 	//Main loop flag
 	bool quit = false;
 
@@ -159,6 +161,8 @@ void create_loop() {
 	music->play();
 
 	std::vector<std::vector<Note *>> lanes(4, std::vector<Note *>());
+
+	bool crazy = false;
 
 	//While application is running
 	while( !quit )
@@ -178,15 +182,28 @@ void create_loop() {
 				//Select surfaces based on key press
 				switch( e.key.keysym.sym )
 				{
+					case SDLK_w:
 					case SDLK_UP: laneNo = 2; break;
+					case SDLK_s:
 					case SDLK_DOWN: laneNo = 1; break;
+					case SDLK_a:
 					case SDLK_LEFT: laneNo = 0; break;
+					case SDLK_d:
 					case SDLK_RIGHT: laneNo = 3; break;
+					case SDLK_SPACE: crazy = true; break;
 					default: break;
 				}
 				if(laneNo != -1) {
 					lanes[laneNo].push_back(new Note(music->getSeconds()));
 					printf("%lf\n", music->getSeconds());
+				}
+				if(crazy){
+					lanes[rand() % 4].push_back(new Note(music->getSeconds()));
+					printf("%lf\n", music->getSeconds());
+				}
+			}else if(e.type == SDL_KEYUP) {
+				if(e.key.keysym.sym == SDLK_SPACE){
+					crazy = false;
 				}
 			}
 		}
@@ -200,7 +217,7 @@ void create_loop() {
 		SDL_RenderPresent( gRenderer );
 	}
 
-	writeBeatMap("all_star.map", lanes);
+	writeBeatMap(path, lanes);
 }
 
 void game_loop() {
@@ -255,8 +272,11 @@ void game_loop() {
 	}
 }
 
+#define CREATE false
+
 int main( int argc, char* args[] )
 {
+	srand(time(NULL));
 	//Start up SDL and create window
 	if( !init() )
 	{
@@ -264,8 +284,12 @@ int main( int argc, char* args[] )
 	}
 	else
 	{
-		readBeatMap("test_all_star.map", lanes);
-		game_loop();
+		if(CREATE){
+			create_loop("clutterfunk.map");
+		}else{
+			readBeatMap("clutterfunk.map", lanes);
+			game_loop();
+		}
 	}
 
 	//Free resources and close SDL

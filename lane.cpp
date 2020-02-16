@@ -3,6 +3,9 @@
 #include <SDL2/SDL.h>
 
 void Lane::render() {
+    for(NoteImage *note : explodingNotes) {
+        note->render();
+    }
     for(NoteImage *note : viewableNotes) {
         note->render();
     }
@@ -49,11 +52,23 @@ void Lane::updateViewable() {
         
         nextViewable->y = calculateNoteY(nextViewable->note->time, now);
         
-        if(nextViewable->y > SCREEN_HEIGHT + NoteImage::HEIGHT) {
+        if(nextViewable->y > SCREEN_HEIGHT) {
             //don't add me back
         }else{
             //add me back
             viewableNotes.push_back(nextViewable);
+        }
+    }
+
+    int numExploding = explodingNotes.size();
+    for(int i = 0; i < numExploding; i++){
+        NoteImage *nextExploding = explodingNotes.front();
+        explodingNotes.pop_front();
+
+        nextExploding->explosionFactor = (now - nextExploding->explosionStart) * EXPLOSION_SPEED;
+        if(nextExploding->explosionFactor < 1){
+            //add me back
+            explodingNotes.push_back(nextExploding);
         }
     }
 }
@@ -64,11 +79,19 @@ void Lane::hit() {
     double now = toTrack->getSeconds();
     double error = fabs(nextNote->note->time - toTrack->getSeconds());
 
-    if(error < 0.1) {
-        delete nextNote;
+    if(error < 0.15){
         viewableNotes.pop_front();
-        printf("woohoo!\n");
-    }else if(error < 0.3){
-        printf("it's ok i guess\n");
+        nextNote->explosionStart = now;
+        nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
+        explodingNotes.push_back(nextNote);
+        if(error < 0.02){
+            printf("wow!!\n");
+        }else if(error < 0.05){
+            printf("woohoo!\n");
+        }else{
+            printf("meh\n");
+        }
+    }else{
+        printf("ur bad\n");
     }
 }
