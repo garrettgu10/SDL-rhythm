@@ -1,5 +1,6 @@
 #include "lane.h"
 #include "const.h"
+#include "score.h"
 #include <SDL2/SDL.h>
 
 void Lane::render() {
@@ -74,7 +75,12 @@ void Lane::updateViewable() {
 }
 
 void Lane::hit() {
-    if(viewableNotes.size() == 0) return;
+    if(viewableNotes.size() == 0) {
+        score->previousHit = BAD;
+        score->counts[BAD]++;
+        score->pointVal -= 100;
+        return;
+    }
     NoteImage *nextNote = viewableNotes.front();
     double now = toTrack->getSeconds();
     double error = fabs(nextNote->note->time - toTrack->getSeconds());
@@ -85,13 +91,25 @@ void Lane::hit() {
         nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
         explodingNotes.push_back(nextNote);
         if(error < 0.02){
-            printf("wow!!\n");
+            score->pointVal += 300;
+            score->counts[PERFECT]++;
+            score->previousHit = PERFECT;
+            score->combo++;
         }else if(error < 0.05){
-            printf("woohoo!\n");
+            score->pointVal += 200;
+            score->counts[AMAZING]++;
+            score->previousHit = AMAZING;
+            score->combo++;
         }else{
-            printf("meh\n");
+            score->pointVal += 50;
+            score->counts[GREAT]++;
+            score->previousHit = GREAT;
+            score->combo = 0;
         }
     }else{
-        printf("ur bad\n");
+        score->previousHit = BAD;
+        score->counts[BAD]++;
+        score->pointVal -= 100;
+        score->combo = 0;
     }
 }

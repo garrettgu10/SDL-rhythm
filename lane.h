@@ -4,6 +4,7 @@
 #include "note_image.h"
 #include "const.h"
 #include "music.h"
+#include "score.h"
 #include <SDL2/SDL.h>
 #include <deque>
 
@@ -15,12 +16,13 @@ public:
     int x = 0;
     Music *toTrack = NULL;
     ArrowImage arrowImage = {NULL, 0};
+    Score *score = NULL;
     std::deque<Note *> futureNotes; //sorted
     std::deque<NoteImage *> viewableNotes; //sorted
     std::deque<NoteImage *> explodingNotes;
 
-    Lane(SDL_Renderer *r, Music *music, ArrowImage arrowImage, int x) : 
-        Drawable(r), toTrack(music), arrowImage(arrowImage), x(x) { };
+    Lane(SDL_Renderer *r, Music *music, ArrowImage arrowImage, int x, Score *s) : 
+        Drawable(r), toTrack(music), arrowImage(arrowImage), x(x), score(s) { };
 
     virtual void render();
 

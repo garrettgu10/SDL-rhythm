@@ -1,6 +1,7 @@
 //Using SDL, standard IO, and strings
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_ttf.h>
 #include <stdio.h>
 #include <string>
 #include <ctime>
@@ -12,6 +13,7 @@
 #include "const.h"
 #include "lane.h"
 #include "beatmap.h"
+#include "score.h"
 
 //Starts up SDL and creates window
 bool init();
@@ -31,9 +33,11 @@ bool loadImages();
 SDL_Texture *arrowImage;
 ArrowImage arrows[4];
 
+TTF_Font *mainFont = NULL;
+
 Scene *mainScene = NULL;
 Music *music = NULL;
-Lane *testLane = NULL;
+Score *score;
 std::vector<Lane *> lanes;
 
 bool init()
@@ -73,6 +77,7 @@ bool init()
                     success = false;
                 }
 
+				TTF_Init();
 				if(!loadImages()){
 					success = false;
 				}
@@ -86,9 +91,12 @@ bool init()
 				//create music
 				music = new Music("clutterfunk.ogg");
 
+				score = new Score(gRenderer, mainFont);
+				mainScene->push_back(score);
+
 				//test lane
 				for(int i = 0; i < 4; i++){
-					Lane *newLane = new Lane(gRenderer, music, arrows[i], 100 + 110 * i);
+					Lane *newLane = new Lane(gRenderer, music, arrows[i], 100 + 110 * i, score);
 					mainScene->push_back(newLane);
 					lanes.push_back(newLane);
 				}
@@ -107,6 +115,11 @@ void close()
 
 	delete music;
 	music = NULL;
+
+	TTF_CloseFont(mainFont);
+	mainFont = NULL;
+
+	TTF_Quit();
 
 	//Quit SDL subsystems
 	SDL_Quit();
@@ -145,6 +158,12 @@ bool loadImages()
 		arrows[1].rgb = 0xc2714f;
 		arrows[2].rgb = 0x7e9181;
 		arrows[3].rgb = 0x016fb9;
+	}
+
+	mainFont = TTF_OpenFont("hack.ttf", 30);
+	if(mainFont == NULL){
+		printf("Failed to load font: %s\n", TTF_GetError());
+		success = false;
 	}
 
 	return success;
