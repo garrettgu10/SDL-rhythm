@@ -10,6 +10,7 @@
 #include "music.h"
 #include "const.h"
 #include "lane.h"
+#include "beatmap.h"
 
 //Starts up SDL and creates window
 bool init();
@@ -31,6 +32,7 @@ SDL_Surface* gCurrentSurface = NULL;
 Scene *mainScene = NULL;
 Music *music = NULL;
 Lane *testLane = NULL;
+std::vector<Lane *> lanes;
 
 bool init()
 {
@@ -74,14 +76,16 @@ bool init()
 
 				//create scene
 				mainScene = new Scene(gRenderer);
-				mainScene->push_back(new NoteImage(gRenderer, 100, 100, 0xff0000, NULL));
 
 				//create music
 				music = new Music("SmashMouth-AllStar.ogg");
 
 				//test lane
-				testLane = new Lane(gRenderer, music, 200);
-				mainScene->push_back(testLane);
+				for(int i = 0; i < 4; i++){
+					Lane *newLane = new Lane(gRenderer, music, 100 + 110 * i);
+					mainScene->push_back(newLane);
+					lanes.push_back(newLane);
+				}
 			}
 		}
 	}
@@ -114,6 +118,112 @@ SDL_Surface* loadSurface( const char * path )
 	return loadedSurface;
 }
 
+//loop for creating a beatmap
+void create_loop() {
+	//Main loop flag
+	bool quit = false;
+
+	//Event handler
+	SDL_Event e;
+
+	music->play();
+
+	std::vector<std::vector<Note *>> lanes(4, std::vector<Note *>());
+
+	//While application is running
+	while( !quit )
+	{
+		//Handle events on queue
+		while( SDL_PollEvent( &e ) != 0 )
+		{
+			//User requests quit
+			if( e.type == SDL_QUIT )
+			{
+				quit = true;
+			}
+			//User presses a key
+			else if( e.type == SDL_KEYDOWN )
+			{
+				int laneNo = -1;
+				//Select surfaces based on key press
+				switch( e.key.keysym.sym )
+				{
+					case SDLK_UP: laneNo = 2; break;
+					case SDLK_DOWN: laneNo = 1; break;
+					case SDLK_LEFT: laneNo = 0; break;
+					case SDLK_RIGHT: laneNo = 3; break;
+					default: break;
+				}
+				if(laneNo != -1) {
+					lanes[laneNo].push_back(new Note(music->getSeconds()));
+					printf("%lf\n", music->getSeconds());
+				}
+			}
+		}
+
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(gRenderer);
+
+		mainScene->render();
+
+		//Update screen
+		SDL_RenderPresent( gRenderer );
+	}
+
+	writeBeatMap("all_star.map", lanes);
+}
+
+void game_loop() {
+	//Main loop flag
+	bool quit = false;
+
+	//Event handler
+	SDL_Event e;
+
+	music->play();
+
+	//While application is running
+	while( !quit )
+	{
+		//Handle events on queue
+		while( SDL_PollEvent( &e ) != 0 )
+		{
+			//User requests quit
+			if( e.type == SDL_QUIT )
+			{
+				quit = true;
+			}
+			//User presses a key
+			else if( e.type == SDL_KEYDOWN )
+			{
+				int laneNo = -1;
+				//Select surfaces based on key press
+				switch( e.key.keysym.sym )
+				{
+					case SDLK_UP: laneNo = 2; break;
+					case SDLK_DOWN: laneNo = 1; break;
+					case SDLK_LEFT: laneNo = 0; break;
+					case SDLK_RIGHT: laneNo = 3; break;
+					default: break;
+				}
+				if(laneNo != -1) {
+					lanes[laneNo]->hit();
+				}
+			}
+		}
+
+		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+		SDL_RenderClear(gRenderer);
+
+		for(auto lane : lanes) {
+			lane->updateViewable();
+		}
+		mainScene->render();
+
+		//Update screen
+		SDL_RenderPresent( gRenderer );
+	}
+}
 
 int main( int argc, char* args[] )
 {
@@ -124,53 +234,8 @@ int main( int argc, char* args[] )
 	}
 	else
 	{
-		//Main loop flag
-		bool quit = false;
-
-		//Event handler
-		SDL_Event e;
-
-		music->play();
-		std::time_t start_time = std::time(0);
-		std::time_t time_now = std::time(0);
-		time(&start_time);
-		time(&time_now);
-
-		//While application is running
-		while( !quit )
-		{
-			//Handle events on queue
-			while( SDL_PollEvent( &e ) != 0 )
-			{
-				//User requests quit
-				if( e.type == SDL_QUIT )
-				{
-					quit = true;
-				}
-				//User presses a key
-				else if( e.type == SDL_KEYDOWN )
-				{
-					//Select surfaces based on key press
-					switch( e.key.keysym.sym )
-					{
-						case SDLK_UP: break;
-						case SDLK_DOWN: break;
-						case SDLK_LEFT: break;
-						case SDLK_RIGHT: break;
-						default: break;
-					}
-				}
-			}
-
-			SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
-			SDL_RenderClear(gRenderer);
-
-			mainScene->render();
-			testLane->updateViewable();
-
-			//Update screen
-			SDL_RenderPresent( gRenderer );
-		}
+		readBeatMap("test_all_star.map", lanes);
+		game_loop();
 	}
 
 	//Free resources and close SDL

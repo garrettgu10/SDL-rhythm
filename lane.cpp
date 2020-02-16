@@ -57,3 +57,18 @@ void Lane::updateViewable() {
         }
     }
 }
+
+void Lane::hit() {
+    if(viewableNotes.size() == 0) return;
+    NoteImage *nextNote = viewableNotes.front();
+    double now = toTrack->getSeconds();
+    double error = fabs(nextNote->note->time - toTrack->getSeconds());
+
+    if(error < 0.1) {
+        delete nextNote;
+        viewableNotes.pop_front();
+        printf("woohoo!\n");
+    }else if(error < 0.3){
+        printf("it's ok i guess\n");
+    }
+}

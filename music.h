@@ -6,7 +6,7 @@ class Music {
 public:
     Mix_Music *music;
     int samples = 0;
-    int frequency = 163840;
+    int frequency = 176400;
     Timer timer;
 
     Music(const char *path);
