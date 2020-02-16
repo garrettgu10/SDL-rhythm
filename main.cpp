@@ -17,8 +17,8 @@
 
 #define CREATE false
 #define SLOW false
-#define SONG_PATH "assets/skystrike.ogg"
-#define MAP_PATH "assets/skystrike.map"
+#define SONG_PATH "assets/clutterfunk.ogg"
+#define MAP_PATH "assets/clutterfunk.map"
 #define ARROW_PATH "assets/arrow.bmp"
 #define FONT_PATH "assets/hack.ttf"
 
