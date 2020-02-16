@@ -17,8 +17,10 @@
 
 #define CREATE false
 #define SLOW false
-#define SONG_PATH "clutterfunk.ogg"
-#define MAP_PATH "clutterfunk.map"
+#define SONG_PATH "assets/skystrike.ogg"
+#define MAP_PATH "assets/skystrike.map"
+#define ARROW_PATH "assets/arrow.bmp"
+#define FONT_PATH "assets/hack.ttf"
 
 //Starts up SDL and creates window
 bool init();
@@ -44,6 +46,13 @@ Scene *mainScene = NULL;
 Music *music = NULL;
 Score *score;
 std::vector<Lane *> lanes;
+
+bool finished() {
+	for(auto lane : lanes) {
+		if(!lane->finished) return false;
+	}
+	return true;
+}
 
 bool init()
 {
@@ -146,7 +155,7 @@ bool loadImages()
 {
 	bool success = true;
 	
-	SDL_Surface *surface = loadSurface("arrow.bmp");
+	SDL_Surface *surface = loadSurface(ARROW_PATH);
 	if(surface == NULL){
 		success = false;
 	}else{
@@ -165,7 +174,7 @@ bool loadImages()
 		arrows[3].rgb = 0x016fb9;
 	}
 
-	mainFont = TTF_OpenFont("hack.ttf", 30);
+	mainFont = TTF_OpenFont(FONT_PATH, 30);
 	if(mainFont == NULL){
 		printf("Failed to load font: %s\n", TTF_GetError());
 		success = false;
@@ -252,6 +261,7 @@ void create_loop(const char *path) {
 void game_loop() {
 	//Main loop flag
 	bool quit = false;
+	bool shownEndBox = false;
 
 	//Event handler
 	SDL_Event e;
@@ -307,6 +317,12 @@ void game_loop() {
 
 		//Update screen
 		SDL_RenderPresent( gRenderer );
+
+		if(!shownEndBox && finished()) {
+			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Done", "Finished", gWindow);
+
+			shownEndBox = true;
+		}
 	}
 }
 

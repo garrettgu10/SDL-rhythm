@@ -17,6 +17,7 @@ public:
     Music *toTrack = NULL;
     ArrowImage arrowImage = {NULL, 0};
     Score *score = NULL;
+    bool finished = false;
     std::deque<Note *> futureNotes; //sorted
     std::deque<NoteImage *> viewableNotes; //sorted
     std::deque<NoteImage *> explodingNotes;
@@ -29,6 +30,8 @@ public:
     static int calculateNoteY(double noteTime, double now);
 
     void updateViewable();
+
+    inline void handleVerdict(int);
 
     void hit();
 };

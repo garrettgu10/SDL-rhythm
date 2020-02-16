@@ -2,9 +2,12 @@
 #include "const.h"
 #include <SDL2/SDL_ttf.h>
 
-void Score::drawText(char *text, int x, int y) {
+void Score::drawText(char *text, int x, int y, double scale) {
     SDL_Rect rect = {x, y, 0, 0};
     TTF_SizeText(font, text, &rect.w, &rect.h);
+
+    rect.w *= scale;
+    rect.h *= scale;
 
     SDL_Color color = {0, 0, 0};
     SDL_Surface *surface = TTF_RenderText_Solid(font, text, color);
@@ -18,7 +21,7 @@ void Score::drawText(char *text, int x, int y) {
 
 void Score::render(){
     char *description = (char *)describeHit(previousHit);
-    drawText(description, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 120);
+    drawText(description, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 150, 2);
 
     char temp[50];
     snprintf(temp, 50, "Score:   %ld", pointVal);

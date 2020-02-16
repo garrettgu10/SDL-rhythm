@@ -19,7 +19,7 @@ public:
     Score(SDL_Renderer *r, TTF_Font *f): Drawable(r), font(f) {};
 
     void render();
-    void drawText(char *text, int x, int y);
+    void drawText(char *text, int x, int y, double scale = 1.0);
 
     const char *describeHit(int type){
         switch(type){

@@ -59,6 +59,7 @@ void Lane::updateViewable() {
             score->counts[BAD]++;
             score->pointVal -= 100;
             score->combo = 0;
+            delete nextViewable;
         }else{
             //add me back
             viewableNotes.push_back(nextViewable);
@@ -76,15 +77,30 @@ void Lane::updateViewable() {
             explodingNotes.push_back(nextExploding);
         }
     }
+
+    if(futureNotes.size() + viewableNotes.size() + explodingNotes.size() == 0){
+        finished = true;
+    }
+}
+
+const int POINT_VAL[4] = {300, 200, 50, -100};
+
+inline void Lane::handleVerdict(int verdict) {
+    if(verdict < 0 || verdict >= 4) printf("error 11\n");
+    score->previousHit = verdict;
+    score->counts[verdict]++;
+    score->pointVal += POINT_VAL[verdict];
+    if(verdict == GREAT || verdict == BAD){
+        score->combo = 0;
+    }else{
+        score->combo++;
+    }
 }
 
 void Lane::hit() {
     if(viewableNotes.size() == 0) {
         if(!CHEAT){
-            score->previousHit = BAD;
-            score->counts[BAD]++;
-            score->pointVal -= 100;
-            score->combo = 0;
+            handleVerdict(BAD);
         }
         return;
     }
@@ -97,26 +113,14 @@ void Lane::hit() {
         nextNote->explosionStart = now;
         nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
         explodingNotes.push_back(nextNote);
-        if(error < 0.02 || CHEAT){
-            score->pointVal += 300;
-            score->counts[PERFECT]++;
-            score->previousHit = PERFECT;
-            score->combo++;
-        }else if(error < 0.05){
-            score->pointVal += 200;
-            score->counts[AMAZING]++;
-            score->previousHit = AMAZING;
-            score->combo++;
+        if(error < 0.05 || CHEAT){
+            handleVerdict(PERFECT);
+        }else if(error < 0.10){
+            handleVerdict(AMAZING);
         }else{
-            score->pointVal += 50;
-            score->counts[GREAT]++;
-            score->previousHit = GREAT;
-            score->combo = 0;
+            handleVerdict(GREAT);
         }
     }else if(!CHEAT) {
-        score->previousHit = BAD;
-        score->counts[BAD]++;
-        score->pointVal -= 100;
-        score->combo = 0;
+        handleVerdict(BAD);
     }
 }
