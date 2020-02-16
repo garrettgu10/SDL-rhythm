@@ -234,7 +234,11 @@ void create_loop(const char *path) {
 				}
 				if(crazy){
 					if(now > prevNoteTime) {
-						lanes[rand() % 4].push_back(new Note(now));
+						int rand1 = rand() % 4;
+						int rand2 = rand() % 3;
+						if(rand2 >= rand1) rand2++;
+						lanes[rand1].push_back(new Note(now));
+						lanes[rand2].push_back(new Note(now));
 						printf("%lf\n", now);
 					}
 					prevNoteTime = now;
