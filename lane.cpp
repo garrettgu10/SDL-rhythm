@@ -32,7 +32,7 @@ void Lane::updateViewable() {
         futureNotes.pop_front();
         int noteY = calculateNoteY(nextFuture->time, now);
         if(noteY > -NoteImage::HEIGHT) {
-            NoteImage *newNoteImg = new NoteImage(renderer, x, noteY, RED, nextFuture);
+            NoteImage *newNoteImg = new NoteImage(renderer, x, noteY, RED, nextFuture, arrowImage);
             viewableNotes.push_back(newNoteImg);
         }else{
             //i'm not visible, add me back and stop looking

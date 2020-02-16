@@ -26,8 +26,8 @@ SDL_Window* gWindow = NULL;
 
 SDL_Renderer* gRenderer = NULL;
 
-//Current displayed image
-SDL_Surface* gCurrentSurface = NULL;
+bool loadImages();
+SDL_Texture *arrowImage;
 
 Scene *mainScene = NULL;
 Music *music = NULL;
@@ -71,6 +71,10 @@ bool init()
                     success = false;
                 }
 
+				if(!loadImages()){
+					success = false;
+				}
+
 				//Initialize renderer color
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
@@ -82,7 +86,7 @@ bool init()
 
 				//test lane
 				for(int i = 0; i < 4; i++){
-					Lane *newLane = new Lane(gRenderer, music, 100 + 110 * i);
+					Lane *newLane = new Lane(gRenderer, music, arrowImage, 100 + 110 * i);
 					mainScene->push_back(newLane);
 					lanes.push_back(newLane);
 				}
@@ -116,6 +120,21 @@ SDL_Surface* loadSurface( const char * path )
 	}
 
 	return loadedSurface;
+}
+
+bool loadImages()
+{
+	bool success = true;
+	
+	SDL_Surface *surface = loadSurface("arrow.bmp");
+	if(surface == NULL){
+		success = false;
+	}else{
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB( surface->format, 0xff, 0xff, 0xff));
+		arrowImage = SDL_CreateTextureFromSurface(gRenderer, surface);
+	}
+
+	return success;
 }
 
 //loop for creating a beatmap
