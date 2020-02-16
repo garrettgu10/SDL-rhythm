@@ -15,6 +15,11 @@
 #include "beatmap.h"
 #include "score.h"
 
+#define CREATE false
+#define SLOW false
+#define SONG_PATH "clutterfunk.ogg"
+#define MAP_PATH "clutterfunk.map"
+
 //Starts up SDL and creates window
 bool init();
 
@@ -89,7 +94,7 @@ bool init()
 				mainScene = new Scene(gRenderer);
 
 				//create music
-				music = new Music("clutterfunk.ogg");
+				music = new Music(SONG_PATH);
 
 				score = new Score(gRenderer, mainFont);
 				mainScene->push_back(score);
@@ -212,12 +217,13 @@ void create_loop(const char *path) {
 					case SDLK_SPACE: crazy = true; break;
 					default: break;
 				}
+
+				double now = music->getSeconds() * (SLOW? 0.5: 1);
 				if(laneNo != -1) {
-					lanes[laneNo].push_back(new Note(music->getSeconds()));
-					printf("%lf\n", music->getSeconds());
+					lanes[laneNo].push_back(new Note(now));
+					printf("%lf\n", now);
 				}
 				if(crazy){
-					double now = music->getSeconds();
 					if(now > prevNoteTime) {
 						lanes[rand() % 4].push_back(new Note(now));
 						printf("%lf\n", now);
@@ -285,6 +291,12 @@ void game_loop() {
 			}
 		}
 
+		if(CHEAT){
+			for(int i = 0; i < 4; i++){
+				lanes[i]->hit();
+			}
+		}
+
 		SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 		SDL_RenderClear(gRenderer);
 
@@ -295,12 +307,8 @@ void game_loop() {
 
 		//Update screen
 		SDL_RenderPresent( gRenderer );
-
-		SDL_Delay(10);
 	}
 }
-
-#define CREATE false
 
 int main( int argc, char* args[] )
 {
@@ -313,9 +321,9 @@ int main( int argc, char* args[] )
 	else
 	{
 		if(CREATE){
-			create_loop("clutterfunk.map");
+			create_loop(MAP_PATH);
 		}else{
-			readBeatMap("clutterfunk.map", lanes);
+			readBeatMap(MAP_PATH, lanes);
 			game_loop();
 		}
 	}

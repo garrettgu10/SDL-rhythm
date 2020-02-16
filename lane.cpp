@@ -80,22 +80,24 @@ void Lane::updateViewable() {
 
 void Lane::hit() {
     if(viewableNotes.size() == 0) {
-        score->previousHit = BAD;
-        score->counts[BAD]++;
-        score->pointVal -= 100;
-        score->combo = 0;
+        if(!CHEAT){
+            score->previousHit = BAD;
+            score->counts[BAD]++;
+            score->pointVal -= 100;
+            score->combo = 0;
+        }
         return;
     }
     NoteImage *nextNote = viewableNotes.front();
     double now = toTrack->getSeconds();
     double error = fabs(nextNote->note->time - toTrack->getSeconds());
 
-    if(error < 0.15){
+    if(error < (CHEAT? 0.05 : 0.15)){
         viewableNotes.pop_front();
         nextNote->explosionStart = now;
         nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
         explodingNotes.push_back(nextNote);
-        if(error < 0.02){
+        if(error < 0.02 || CHEAT){
             score->pointVal += 300;
             score->counts[PERFECT]++;
             score->previousHit = PERFECT;
@@ -111,7 +113,7 @@ void Lane::hit() {
             score->previousHit = GREAT;
             score->combo = 0;
         }
-    }else{
+    }else if(!CHEAT) {
         score->previousHit = BAD;
         score->counts[BAD]++;
         score->pointVal -= 100;
