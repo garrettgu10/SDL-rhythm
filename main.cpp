@@ -28,6 +28,7 @@ SDL_Renderer* gRenderer = NULL;
 
 bool loadImages();
 SDL_Texture *arrowImage;
+ArrowImage arrows[4];
 
 Scene *mainScene = NULL;
 Music *music = NULL;
@@ -86,7 +87,7 @@ bool init()
 
 				//test lane
 				for(int i = 0; i < 4; i++){
-					Lane *newLane = new Lane(gRenderer, music, arrowImage, 100 + 110 * i);
+					Lane *newLane = new Lane(gRenderer, music, arrows[i], 100 + 110 * i);
 					mainScene->push_back(newLane);
 					lanes.push_back(newLane);
 				}
@@ -130,8 +131,18 @@ bool loadImages()
 	if(surface == NULL){
 		success = false;
 	}else{
-		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB( surface->format, 0xff, 0xff, 0xff));
-		arrowImage = SDL_CreateTextureFromSurface(gRenderer, surface);
+		SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB( surface->format, 0, 0, 0));
+		for(int i = 0; i < 4; i++){
+			arrows[i].image = SDL_CreateTextureFromSurface(gRenderer, surface);
+		}
+		arrows[0].rotation = 270;
+		arrows[1].rotation = 180;
+		arrows[2].rotation = 0;
+		arrows[3].rotation = 90;
+		arrows[0].rgb = 0xe0607e;
+		arrows[1].rgb = 0xc2714f;
+		arrows[2].rgb = 0x7e9181;
+		arrows[3].rgb = 0x016fb9;
 	}
 
 	return success;

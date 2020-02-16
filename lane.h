@@ -13,11 +13,11 @@ class Lane : public Drawable {
 public:
     int x = 0;
     Music *toTrack = NULL;
-    SDL_Texture *arrowImage = NULL;
+    ArrowImage arrowImage = {NULL, 0};
     std::deque<Note *> futureNotes; //sorted
     std::deque<NoteImage *> viewableNotes; //sorted
 
-    Lane(SDL_Renderer *r, Music *music, SDL_Texture *arrowImage, int x) : 
+    Lane(SDL_Renderer *r, Music *music, ArrowImage arrowImage, int x) : 
         Drawable(r), toTrack(music), arrowImage(arrowImage), x(x) { };
 
     virtual void render();

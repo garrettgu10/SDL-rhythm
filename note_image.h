@@ -4,16 +4,22 @@
 #include "drawable.h"
 #include "note.h"
 
+struct ArrowImage {
+    SDL_Texture *image;
+    int rotation;
+    int rgb;
+};
+
 class NoteImage : public Drawable{
 public:
     static const int WIDTH = 100;
     static const int HEIGHT = 100;
 
-    SDL_Texture *arrowImage;
+    ArrowImage arrowImage;
     Note *note;
     int x;
     int y;
-    NoteImage(SDL_Renderer *r, int x, int y, int rgb, Note *note, SDL_Texture *arrowImage) : 
+    NoteImage(SDL_Renderer *r, int x, int y, int rgb, Note *note, ArrowImage arrowImage) : 
         Drawable(r), x(x), y(y), note(note), arrowImage(arrowImage) {
         
     };
