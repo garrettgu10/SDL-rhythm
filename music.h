@@ -12,7 +12,7 @@ public:
     Music(const char *path);
 
     void play() {
-        Mix_PlayMusic(music, -1);
+        Mix_FadeInMusic(music, -1, 1500);
         timer.start();
     }
 

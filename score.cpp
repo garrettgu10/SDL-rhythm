@@ -24,18 +24,21 @@ void Score::render(){
     drawText(description, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 150, 2);
 
     char temp[50];
-    snprintf(temp, 50, "Score:   %ld", pointVal);
+    snprintf(temp, 50, "Score:     %ld", pointVal);
     drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 90);
 
-    snprintf(temp, 50, "Combo:   %d", combo);
+    snprintf(temp, 50, "Combo:     %d", combo);
     drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 60);
 
+    snprintf(temp, 50, "Max Combo: %d", maxCombo);
+    drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 - 30);
+
     snprintf(temp, 50, "Perfect: %d", counts[PERFECT]);
-    drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2);
-    snprintf(temp, 50, "Amazing: %d", counts[AMAZING]);
     drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 + 30);
-    snprintf(temp, 50, "Great:   %d", counts[GREAT]);
+    snprintf(temp, 50, "Amazing: %d", counts[AMAZING]);
     drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 + 60);
-    snprintf(temp, 50, "Bad:     %d", counts[BAD]);
+    snprintf(temp, 50, "Great:   %d", counts[GREAT]);
     drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 + 90);
+    snprintf(temp, 50, "Bad:     %d", counts[BAD]);
+    drawText(temp, SCREEN_WIDTH * 5 / 8, SCREEN_HEIGHT / 2 + 120);
 }

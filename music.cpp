@@ -18,4 +18,5 @@ Music::Music(const char *path)  {
     }
 
     Mix_SetPostMix(mix_handler, this);
+    Mix_Volume(-1, 16);
 }

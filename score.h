@@ -13,6 +13,7 @@ public:
     long pointVal = 0;
     int counts[4] = {0};
     int combo = 0;
+    int maxCombo = 0;
     int previousHit = -1;
 
     TTF_Font *font;

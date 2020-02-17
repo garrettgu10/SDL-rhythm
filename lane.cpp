@@ -11,7 +11,7 @@ void Lane::render() {
         note->render();
     }
 
-    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0xFF, 0xFF);
+    SDL_SetRenderDrawColor(renderer, 0x00, 0x00, 0x00, 0xFF);
     SDL_RenderDrawLine(renderer, 0, SCREEN_HEIGHT - BOTTOM_PADDING, 
         SCREEN_WIDTH, SCREEN_HEIGHT - BOTTOM_PADDING);
 }
@@ -94,6 +94,9 @@ inline void Lane::handleVerdict(int verdict) {
         score->combo = 0;
     }else{
         score->combo++;
+        if(score->combo > score->maxCombo) {
+            score->maxCombo = score->combo;
+        }
     }
 }
 

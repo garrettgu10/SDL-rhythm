@@ -2,3 +2,4 @@
 /lib
 /.vscode
 play
+.gdb_history
