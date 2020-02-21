@@ -17,7 +17,7 @@
 
 #define CREATE false
 #define SLOW false
-#define SONG "clutterfunk"
+#define SONG "skystrike"
 #define SONG_PATH "assets/" SONG ".ogg"
 #define MAP_PATH "assets/" SONG ".map"
 #define ARROW_PATH "assets/arrow.bmp"
@@ -324,6 +324,30 @@ void game_loop() {
 		SDL_RenderPresent( gRenderer );
 
 		if(!shownEndBox && finished()) {
+			uint8_t temp[32];
+			uint8_t all_hashes[32] = {0};
+			for(int i = 0; i < 4; i++){
+				lanes[i]->getHash(temp);
+
+				for(int i = 0; i < 32; i++){
+					printf("%02x", temp[i]);
+				}
+
+				printf("\n");
+
+				printf("%d\n", lanes[i]->count);
+				
+				for(int j = 0; j < 32; j++){
+					all_hashes[j] ^= temp[j];
+				}
+			}
+
+			for(int i = 0; i < 32; i++){
+				printf("%02x", all_hashes[i]);
+			}
+
+			printf("\n");
+
 			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Done", "Finished", gWindow);
 
 			shownEndBox = true;

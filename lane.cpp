@@ -4,6 +4,12 @@
 #include "picosha2.h"
 #include <SDL2/SDL.h>
 
+struct Hashable{
+    double time = 0;
+    uint32_t verdict = BAD;
+    uint32_t salt = 1111880203;
+};
+
 void Lane::render() {
     for(NoteImage *note : explodingNotes) {
         note->render();
@@ -56,10 +62,12 @@ void Lane::updateViewable() {
         
         if(nextViewable->y > SCREEN_HEIGHT + NoteImage::HEIGHT / 2) {
             //we missed it
-            score->previousHit = BAD;
-            score->counts[BAD]++;
-            score->pointVal -= 100;
-            score->combo = 0;
+            handleVerdict(BAD);
+            Hashable info;
+            info.time = nextViewable->note->time;
+            info.verdict = BAD;
+            hasher.process((uint8_t *)&info, (uint8_t *)(&info + 1));
+
             delete nextViewable;
         }else{
             //add me back
@@ -86,8 +94,8 @@ void Lane::updateViewable() {
 
 const int POINT_VAL[4] = {300, 200, 50, -100};
 
-inline void Lane::handleVerdict(int verdict) {
-    if(verdict < 0 || verdict >= 4) printf("error 11\n");
+__attribute__((always_inline)) void Lane::handleVerdict(int verdict) {
+    if(verdict < 0 || verdict >= 4) return;
     score->previousHit = verdict;
     score->counts[verdict]++;
     score->pointVal += POINT_VAL[verdict];
@@ -102,29 +110,49 @@ inline void Lane::handleVerdict(int verdict) {
 }
 
 void Lane::hit() {
+    Hashable info;
+
     if(viewableNotes.size() == 0) {
         if(!CHEAT){
             handleVerdict(BAD);
+
+            hasher.process((uint8_t *)&info, (uint8_t *)(&info + 1));
+            count++;
         }
         return;
     }
     NoteImage *nextNote = viewableNotes.front();
     double now = toTrack->getSeconds();
-    double error = fabs(nextNote->note->time - toTrack->getSeconds());
+    double error = fabs(nextNote->note->time - now);
+
+    info.time = nextNote->note->time;
 
     if(error < (CHEAT? 0.05 : 0.15)){
         viewableNotes.pop_front();
         nextNote->explosionStart = now;
         nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
         explodingNotes.push_back(nextNote);
-        if(error < 0.03 || CHEAT){
+        if(error < 0.15 || CHEAT){ //TODO: fix back
             handleVerdict(PERFECT);
+            info.verdict = PERFECT;
         }else if(error < 0.07){
             handleVerdict(AMAZING);
+            info.verdict = AMAZING;
         }else{
             handleVerdict(GREAT);
+            info.verdict = GREAT;
         }
     }else if(!CHEAT) {
         handleVerdict(BAD);
     }
+
+    if(!CHEAT || info.verdict == PERFECT){
+        hasher.process((uint8_t *)&info, (uint8_t *)(&info + 1));
+        count++;
+    }
+}
+
+void Lane::getHash(uint8_t *dest) {
+    hasher.finish();
+    hasher.get_hash_bytes(dest, dest + 32);
 }

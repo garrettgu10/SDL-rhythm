@@ -27,14 +27,30 @@ void writeBeatMap(const char *path, std::vector<std::vector<Note *>> lanes) {
     }
 
     fp = fopen(path, "w");
+    if(fp == NULL) {
+        printf("coult not open beatmap file for write: %s\n", path);
+        exit(1);
+    }
     fwrite(allNotes, sizeof(BeatMapNote), totalNotes, fp);
     fclose(fp);
 }
 
+struct Hashable{
+    double time = 0;
+    uint32_t verdict = BAD;
+    uint32_t salt = 1111880203;
+};
+
 void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
+    picosha2::hash256_one_by_one hashers[4];
+
     FILE *fp;
     
     fp = fopen(path, "r");
+    if(fp == NULL) {
+        printf("coult not open beatmap file for read: %s\n", path);
+        exit(1);
+    }
     fseek(fp, 0, SEEK_END);
     long totalNotes = ftell(fp) / sizeof(BeatMapNote);
     rewind(fp);
@@ -46,7 +62,28 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
     for(int i = 0 ; i < totalNotes; i++){
         BeatMapNote note = allNotes[i];
         lanes.at(note.laneNo)->futureNotes.push_back(new Note(note.time));
+        
+        Hashable info;
+        info.time = note.time;
+        info.verdict = PERFECT;
+
+        hashers[note.laneNo].process((uint8_t *)&info, (uint8_t *)(&info + 1));
     }
+    uint8_t temp[32];
+    uint8_t all[32] = {0};
+    for(int i = 0; i < 4; i++){
+        hashers[i].finish();
+        hashers[i].get_hash_bytes(temp, temp + 32);
+        for(int i = 0; i < 32; i++){
+            all[i] ^= temp[i];
+        }
+    }
+
+    for(int i = 0; i < 32; i++){
+        printf("%02x", all[i]);
+    }
+
+    printf("\n");
 
     fclose(fp);
 }
