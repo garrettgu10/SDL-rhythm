@@ -19,7 +19,7 @@
 #define SLOW false
 #define SONG "clutterfunk"
 #define SONG_PATH "assets/" SONG ".ogg"
-#define MAP_PATH "assets/" SONG ".map.bkp"
+#define MAP_PATH "assets/" SONG ".map"
 #define ARROW_PATH "assets/arrow.bmp"
 #define FONT_PATH "assets/hack.ttf"
 

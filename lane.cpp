@@ -1,6 +1,7 @@
 #include "lane.h"
 #include "const.h"
 #include "score.h"
+#include "picosha2.h"
 #include <SDL2/SDL.h>
 
 void Lane::render() {
