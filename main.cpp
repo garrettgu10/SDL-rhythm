@@ -6,6 +6,7 @@
 #include <string>
 #include <ctime>
 #include <cstdlib>
+#include <cstring>
 #include "note.h"
 #include "note_image.h"
 #include "scene.h"
@@ -14,14 +15,7 @@
 #include "lane.h"
 #include "beatmap.h"
 #include "score.h"
-
-#define CREATE false
-#define SLOW false
-#define SONG "skystrike"
-#define SONG_PATH "assets/" SONG ".ogg"
-#define MAP_PATH "assets/" SONG ".map"
-#define ARROW_PATH "assets/arrow.bmp"
-#define FONT_PATH "assets/hack.ttf"
+#include "secret.h"
 
 //Starts up SDL and creates window
 bool init();
@@ -47,6 +41,11 @@ Scene *mainScene = NULL;
 Music *music = NULL;
 Score *score;
 std::vector<Lane *> lanes;
+
+char song[50];
+char song_path[100];
+char map_path[100];
+char secret_path[100];
 
 bool finished() {
 	for(auto lane : lanes) {
@@ -104,7 +103,7 @@ bool init()
 				mainScene = new Scene(gRenderer);
 
 				//create music
-				music = new Music(SONG_PATH);
+				music = new Music(song_path);
 
 				score = new Score(gRenderer, mainFont);
 				mainScene->push_back(score);
@@ -263,6 +262,10 @@ void create_loop(const char *path) {
 	writeBeatMap(path, lanes);
 }
 
+bool allPerfect() {
+	return score->counts[AMAZING] == 0 && score->counts[GREAT] == 0 && score->counts[BAD] == 0;
+}
+
 void game_loop() {
 	//Main loop flag
 	bool quit = false;
@@ -324,39 +327,29 @@ void game_loop() {
 		SDL_RenderPresent( gRenderer );
 
 		if(!shownEndBox && finished()) {
-			uint8_t temp[32];
-			uint8_t all_hashes[32] = {0};
-			for(int i = 0; i < 4; i++){
-				lanes[i]->getHash(temp);
 
-				for(int i = 0; i < 32; i++){
-					printf("%02x", temp[i]);
-				}
-
-				printf("\n");
-
-				printf("%d\n", lanes[i]->count);
-				
-				for(int j = 0; j < 32; j++){
-					all_hashes[j] ^= temp[j];
-				}
+			if(!allPerfect()){
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Done", "Get all perfect to decrypt the secret!", gWindow);
+			}else if(!showSecret(gWindow, lanes, secret_path)){
+				SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Done", "There seems to be no secret attached to this song, or the secret was corrupted. ", gWindow);
 			}
-
-			for(int i = 0; i < 32; i++){
-				printf("%02x", all_hashes[i]);
-			}
-
-			printf("\n");
-
-			SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "Done", "Finished", gWindow);
 
 			shownEndBox = true;
 		}
 	}
 }
 
-int main( int argc, char* args[] )
+int main( int argc, char* argv[] )
 {
+	strcpy(song, "clutterfunk");
+	if(argc == 2) {
+		snprintf(song, 50, "%s", argv[1]);
+	}
+
+	snprintf(song_path, 100, "assets/%s.ogg", song);
+	snprintf(map_path, 100, "assets/%s.map", song);
+	snprintf(secret_path, 100, "assets/%s.secret", song);
+
 	srand(time(NULL));
 	//Start up SDL and create window
 	if( !init() )
@@ -366,9 +359,9 @@ int main( int argc, char* args[] )
 	else
 	{
 		if(CREATE){
-			create_loop(MAP_PATH);
+			create_loop(map_path);
 		}else{
-			readBeatMap(MAP_PATH, lanes);
+			readBeatMap(map_path, lanes);
 			game_loop();
 		}
 	}

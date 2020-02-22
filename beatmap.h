@@ -3,8 +3,8 @@
 #include <vector>
 #include "note.h"
 #include "lane.h"
-
-#define PRINT_HASH
+#include "secret.h"
+#include "const.h"
 
 struct BeatMapNote {
     double time;
@@ -37,11 +37,13 @@ void writeBeatMap(const char *path, std::vector<std::vector<Note *>> lanes) {
     fclose(fp);
 }
 
+#ifdef PRINT_HASH
 struct Hashable{
     double time = 0;
     uint32_t verdict = BAD;
     uint32_t salt = 1111880203;
 };
+#endif
 
 void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
 #ifdef PRINT_HASH
@@ -92,6 +94,12 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
     }
 
     printf("\n");
+
+#ifdef GEN_SECRET
+
+    createSecret(secret_path, "utflag{w0ah_d00d_u_got_some_mad_skillz_J4ebBxZpAS}", all);
+
+#endif
 #endif
 
     fclose(fp);
