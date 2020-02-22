@@ -4,6 +4,8 @@
 #include "note.h"
 #include "lane.h"
 
+#define PRINT_HASH
+
 struct BeatMapNote {
     double time;
     int laneNo;
@@ -42,7 +44,9 @@ struct Hashable{
 };
 
 void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
+#ifdef PRINT_HASH
     picosha2::hash256_one_by_one hashers[4];
+#endif
 
     FILE *fp;
     
@@ -62,13 +66,17 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
     for(int i = 0 ; i < totalNotes; i++){
         BeatMapNote note = allNotes[i];
         lanes.at(note.laneNo)->futureNotes.push_back(new Note(note.time));
-        
+
+#ifdef PRINT_HASH
         Hashable info;
         info.time = note.time;
         info.verdict = PERFECT;
 
         hashers[note.laneNo].process((uint8_t *)&info, (uint8_t *)(&info + 1));
+#endif
     }
+
+#ifdef PRINT_HASH
     uint8_t temp[32];
     uint8_t all[32] = {0};
     for(int i = 0; i < 4; i++){
@@ -84,6 +92,7 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
     }
 
     printf("\n");
+#endif
 
     fclose(fp);
 }

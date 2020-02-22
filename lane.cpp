@@ -132,7 +132,7 @@ void Lane::hit() {
         nextNote->explosionStart = now;
         nextNote->y = SCREEN_HEIGHT - BOTTOM_PADDING;
         explodingNotes.push_back(nextNote);
-        if(error < 0.15 || CHEAT){ //TODO: fix back
+        if(error < 0.03 || CHEAT){
             handleVerdict(PERFECT);
             info.verdict = PERFECT;
         }else if(error < 0.07){
