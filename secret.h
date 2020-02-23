@@ -3,19 +3,25 @@
 #include <SDL2/SDL.h>
 #include <cstring>
 #include "lane.h"
+#include "files.h"
 #include "aes.h"
 
 bool showSecret(SDL_Window *gWindow, std::vector<Lane *> lanes, const char *path) {
     FILE *fp;
+
+    int size = getFileSize(path);
+    if(size < 0) {
+        printf("could not determine size of secret file: %s\n", path);
+        return false;
+    }
     
     fp = fopen(path, "r");
     if(fp == NULL) {
         printf("could not open secret file for read: %s\n", path);
         return false;
     }
-    fseek(fp, 0, SEEK_END);
-    int numBlocks = ftell(fp) / 16;
-    rewind(fp);
+    int numBlocks = size / 16;
+
     uint8_t *secret = new uint8_t[16 * numBlocks];
     uint8_t *ptext = new uint8_t[16 * numBlocks];
     fread(secret, 16, numBlocks, fp);

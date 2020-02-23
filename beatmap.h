@@ -5,6 +5,7 @@
 #include "lane.h"
 #include "secret.h"
 #include "const.h"
+#include "files.h"
 
 struct BeatMapNote {
     double time;
@@ -51,15 +52,20 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
 #endif
 
     FILE *fp;
+
+    int size = getFileSize(path);
+    if(size < 0) {
+        printf("could not determine size of file: %s\n", path);
+        exit(1);
+    }
     
     fp = fopen(path, "r");
     if(fp == NULL) {
-        printf("coult not open beatmap file for read: %s\n", path);
+        printf("could not open beatmap file for read: %s\n", path);
         exit(1);
     }
-    fseek(fp, 0, SEEK_END);
-    long totalNotes = ftell(fp) / sizeof(BeatMapNote);
-    rewind(fp);
+
+    long totalNotes = size / sizeof(BeatMapNote);
 
     BeatMapNote *allNotes = new BeatMapNote[totalNotes];
 
