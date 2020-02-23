@@ -6,6 +6,13 @@
 #include "files.h"
 #include "aes.h"
 
+void printHash(const uint8_t *hash) {
+    for(int i = 0; i < 32; i++){
+        printf("%02x", hash[i]);
+    }
+    printf("\n");
+}
+
 bool showSecret(SDL_Window *gWindow, std::vector<Lane *> lanes, const char *path) {
     FILE *fp;
 
@@ -32,10 +39,13 @@ bool showSecret(SDL_Window *gWindow, std::vector<Lane *> lanes, const char *path
     
     for(auto lane : lanes) {
         lane->getHash(temp);
+        printHash(temp);
+
         for(int i = 0; i < 32; i++){
             all[i] ^= temp[i];
         }
     }
+    printHash(all);
 
     aes_decrypt_pcbc(secret, all, all + 16, numBlocks, ptext);
 
