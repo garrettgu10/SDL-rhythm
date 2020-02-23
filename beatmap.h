@@ -59,7 +59,7 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
         exit(1);
     }
     
-    fp = fopen(path, "r");
+    fp = fopen(path, "rb");
     if(fp == NULL) {
         printf("could not open beatmap file for read: %s\n", path);
         exit(1);
@@ -69,7 +69,7 @@ void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
 
     BeatMapNote *allNotes = new BeatMapNote[totalNotes];
 
-    fread(allNotes, sizeof(BeatMapNote), totalNotes, fp);
+    int items = fread(allNotes, sizeof(BeatMapNote), totalNotes, fp);
 
     for(int i = 0 ; i < totalNotes; i++){
         BeatMapNote note = allNotes[i];

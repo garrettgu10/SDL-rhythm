@@ -15,7 +15,7 @@ bool showSecret(SDL_Window *gWindow, std::vector<Lane *> lanes, const char *path
         return false;
     }
     
-    fp = fopen(path, "r");
+    fp = fopen(path, "rb");
     if(fp == NULL) {
         printf("could not open secret file for read: %s\n", path);
         return false;
