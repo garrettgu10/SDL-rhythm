@@ -1,6 +1,7 @@
 #include "score.h"
 #include "const.h"
 #include <SDL2/SDL_ttf.h>
+#include <cstdio>
 
 void Score::drawText(char *text, int x, int y, double scale) {
     SDL_Rect rect = {x, y, 0, 0};

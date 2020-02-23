@@ -3,7 +3,7 @@
 const int SCREEN_WIDTH = 1024;
 const int SCREEN_HEIGHT = 768;
 
-#define CHEAT true
+#define CHEAT false
 
 #define CREATE false
 #define SLOW false

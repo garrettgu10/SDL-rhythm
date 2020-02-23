@@ -3,6 +3,7 @@
 #include "score.h"
 #include "picosha2.h"
 #include <SDL2/SDL.h>
+#include <cmath>
 
 struct Hashable{
     double time = 0;

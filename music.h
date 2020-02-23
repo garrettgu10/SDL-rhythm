@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL2/SDL_mixer.h>
+#include <cstdlib>
 #include "timer.h"
 
 class Music {
