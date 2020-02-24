@@ -48,7 +48,7 @@ struct Hashable{
 
 void readBeatMap(const char *path, std::vector<Lane *> &lanes) {
 #ifdef PRINT_HASH
-    picosha2::hash256_one_by_one hashers[4];
+    Hashy::hash256_one_by_one hashers[4];
 #endif
 
     FILE *fp;

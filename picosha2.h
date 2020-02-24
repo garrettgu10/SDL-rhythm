@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <sstream>
 #include <vector>
 #include <fstream>
-namespace picosha2 {
+namespace Hashy {
 typedef unsigned long word_t;
 typedef unsigned char byte_t;
 
@@ -305,7 +305,7 @@ void hash256_impl(InputIter first, InputIter last, OutIter first2,
 template <typename InIter, typename OutIter>
 void hash256(InIter first, InIter last, OutIter first2, OutIter last2,
              int buffer_size = PICOSHA2_BUFFER_SIZE_FOR_INPUT_ITERATOR) {
-    picosha2::impl::hash256_impl(
+    Hashy::impl::hash256_impl(
         first, last, first2, last2, buffer_size,
         typename std::iterator_traits<InIter>::iterator_category());
 }
@@ -358,5 +358,5 @@ template<typename OutIter>void hash256(std::ifstream& f, OutIter first, OutIter 
     hash256(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>(), first,last);
 
 }
-}// namespace picosha2
+}// namespace hashy
 #endif  // PICOSHA2_H

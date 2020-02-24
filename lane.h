@@ -21,7 +21,7 @@ class Lane : public Drawable {
     std::deque<NoteImage *> viewableNotes; //sorted
     std::deque<NoteImage *> explodingNotes;
 
-    picosha2::hash256_one_by_one hasher;
+    Hashy::hash256_one_by_one hasher;
 
     inline void handleVerdict(int);
 
