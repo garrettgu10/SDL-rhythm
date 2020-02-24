@@ -4,4 +4,4 @@ game:
 run: game
 	./play
 
-#windows: g++ *.cpp -IC:\sdl_mingw\include -LC:\sdl_mingw\lib -w -Wl,-subsystem,windows -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_mixer -o play
+#windows: g++ *.cpp -IC:\sdl_mingw\include -LC:\sdl_mingw\lib -w -lmingw32 -lSDL2main -lSDL2 -lSDL2_ttf -lSDL2_mixer -o play

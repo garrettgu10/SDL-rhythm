@@ -39,13 +39,13 @@ bool showSecret(SDL_Window *gWindow, std::vector<Lane *> lanes, const char *path
     
     for(auto lane : lanes) {
         lane->getHash(temp);
-        printHash(temp);
+        //printHash(temp);
 
         for(int i = 0; i < 32; i++){
             all[i] ^= temp[i];
         }
     }
-    printHash(all);
+    //printHash(all);
 
     aes_decrypt_pcbc(secret, all, all + 16, numBlocks, ptext);
 
