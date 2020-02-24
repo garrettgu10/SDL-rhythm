@@ -7,8 +7,6 @@
 #include "const.h"
 #include "files.h"
 
-#define PRINT_HASH
-
 struct BeatMapNote {
     double time;
     int laneNo;
