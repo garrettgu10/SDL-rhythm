@@ -31,7 +31,7 @@ void galois_mtx_mult(uint8_t matrix[4][4], uint8_t column[4]);
 uint8_t galois_mult(uint8_t a, uint8_t b);
 
 //does not mutate ptext
-void aes_encrypt_block(uint8_t ptext[16], uint8_t key[16], uint8_t dest[16])
+void encrypt_block(uint8_t ptext[16], uint8_t key[16], uint8_t dest[16])
 {
 	uint8_t state[4][4];
 	to_square(ptext, state);
@@ -57,7 +57,7 @@ void aes_encrypt_block(uint8_t ptext[16], uint8_t key[16], uint8_t dest[16])
 }
 
 //does not mutate ctext
-void aes_decrypt_block(uint8_t ctext[16], uint8_t key[16], uint8_t dest[16])
+void decrypt_block(uint8_t ctext[16], uint8_t key[16], uint8_t dest[16])
 {
 	uint8_t round_keys[11][4][4];
 	to_square(key, round_keys[0]);
@@ -82,7 +82,7 @@ void aes_decrypt_block(uint8_t ctext[16], uint8_t key[16], uint8_t dest[16])
 	from_square(state, dest);
 }
 
-void aes_encrypt_pcbc(uint8_t *ptext, uint8_t key[16], uint8_t iv[16],
+void encrypt_stream(uint8_t *ptext, uint8_t key[16], uint8_t iv[16],
 					  uint32_t num_blocks, uint8_t *dest)
 {
 	uint8_t curr_iv[16];
@@ -95,7 +95,7 @@ void aes_encrypt_pcbc(uint8_t *ptext, uint8_t key[16], uint8_t iv[16],
 			to_encrypt[j] = curr_iv[j] ^ ptext[16 * i + j];
 		}
 
-		aes_encrypt_block(to_encrypt, key, dest + i * 16);
+		encrypt_block(to_encrypt, key, dest + i * 16);
 
 		for (int j = 0; j < 16; j++) {
 			curr_iv[j] = ptext[16 * i + j] ^ dest[16 * i + j];
@@ -103,7 +103,7 @@ void aes_encrypt_pcbc(uint8_t *ptext, uint8_t key[16], uint8_t iv[16],
 	}
 }
 
-void aes_decrypt_pcbc(uint8_t *ctext, uint8_t key[16], uint8_t iv[16],
+void decrypt_stream(uint8_t *ctext, uint8_t key[16], uint8_t iv[16],
 					  uint32_t num_blocks, uint8_t *dest)
 {
 	uint8_t curr_iv[16];
@@ -113,7 +113,7 @@ void aes_decrypt_pcbc(uint8_t *ctext, uint8_t key[16], uint8_t iv[16],
 
 	for (uint32_t i = 0; i < num_blocks; i++) {
 		uint8_t decrypted[16];
-		aes_decrypt_block(ctext + i * 16, key, decrypted);
+		decrypt_block(ctext + i * 16, key, decrypted);
 
 		for (int j = 0; j < 16; j++) {
 			decrypted[j] ^= curr_iv[j];
@@ -123,72 +123,6 @@ void aes_decrypt_pcbc(uint8_t *ctext, uint8_t key[16], uint8_t iv[16],
 		for (int j = 0; j < 16; j++) {
 			curr_iv[j] = dest[16 * i + j] ^ ctext[16 * i + j];
 		}
-	}
-}
-
-void aes_encrypt_cbc(uint8_t *ptext, uint8_t key[16], uint8_t iv[16],
-					  uint32_t num_blocks, uint8_t *dest)
-{
-	uint8_t curr_iv[16];
-	for (int i = 0; i < 16; i++) {
-		curr_iv[i] = iv[i];
-	}
-	for (uint32_t i = 0; i < num_blocks; i++) {
-		uint8_t to_encrypt[16];
-		for (int j = 0; j < 16; j++) {
-			to_encrypt[j] = curr_iv[j] ^ ptext[16 * i + j];
-		}
-
-		aes_encrypt_block(to_encrypt, key, dest + i * 16);
-
-		for (int j = 0; j < 16; j++) {
-			curr_iv[j] = dest[16 * i + j];
-		}
-	}
-}
-
-void aes_decrypt_cbc(uint8_t *ctext, uint8_t key[16], uint8_t iv[16],
-					  uint32_t num_blocks, uint8_t *dest)
-{
-	uint8_t curr_iv[16];
-	for (int i = 0; i < 16; i++) {
-		curr_iv[i] = iv[i];
-	}
-
-	for (uint32_t i = 0; i < num_blocks; i++) {
-		uint8_t decrypted[16];
-		aes_decrypt_block(ctext + i * 16, key, decrypted);
-
-		for (int j = 0; j < 16; j++) {
-			decrypted[j] ^= curr_iv[j];
-			dest[16 * i + j] = decrypted[j];
-		}
-
-		for (int j = 0; j < 16; j++) {
-			curr_iv[j] = ctext[16 * i + j];
-		}
-	}
-}
-
-void aes_cbc_mac(uint8_t *ptext, uint8_t key[16], uint32_t num_blocks,
-				 uint8_t dest[16])
-{
-	uint8_t curr_iv[16];
-	for (int i = 0; i < 16; i++) {
-		curr_iv[i] = 0;
-	}
-
-	for (uint32_t i = 0; i < num_blocks; i++) {
-		uint8_t to_encrypt[16];
-		for (int j = 0; j < 16; j++) {
-			to_encrypt[j] = curr_iv[j] ^ ptext[16 * i + j];
-		}
-
-		aes_encrypt_block(to_encrypt, key, curr_iv);
-	}
-
-	for (int i = 0; i < 16; i++) {
-		dest[i] = curr_iv[i];
 	}
 }
 
